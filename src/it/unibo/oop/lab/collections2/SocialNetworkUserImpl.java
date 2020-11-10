@@ -1,7 +1,6 @@
 package it.unibo.oop.lab.collections2;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * 
@@ -17,7 +16,7 @@ import java.util.List;
  *            Specific user type
  */
 public class SocialNetworkUserImpl<U extends User> extends UserImpl implements SocialNetworkUser<U> {
-
+	
     /*
      * 
      * [FIELDS]
@@ -54,8 +53,17 @@ public class SocialNetworkUserImpl<U extends User> extends UserImpl implements S
      *            alias of the user, i.e. the way a user is identified on an
      *            application
      */
+	
+	private final Map<String, ArrayList<U>> circles;
+	
     public SocialNetworkUserImpl(final String name, final String surname, final String user, final int userAge) {
         super(name, surname, user, userAge);
+        circles = new HashMap<String, ArrayList<U>>();
+    }
+    
+    public SocialNetworkUserImpl(final String name, final String surname, final String user) {
+        super(name, surname, user, -1);
+        circles = new HashMap<String, ArrayList<U>>();
     }
 
     /*
@@ -66,17 +74,45 @@ public class SocialNetworkUserImpl<U extends User> extends UserImpl implements S
 
     @Override
     public boolean addFollowedUser(final String circle, final U user) {
-        return false;
+    	boolean alreadyFriend = false;
+    	
+    	if(!circles.values().isEmpty()) {
+	    	Collection<ArrayList<U>> s = circles.values();
+	    	for(ArrayList<U> sa : s) {
+	    		if(sa.contains(user)) {
+	    			alreadyFriend = true;
+	    		}
+	    	}
+    	}
+    	
+    	if(!circles.containsKey(circle)) {
+    		circles.put(circle, new ArrayList<U>());
+    	}
+    	
+    	circles.get(circle).add(user);
+    	
+    	return alreadyFriend;
     }
-
+    
     @Override
     public Collection<U> getFollowedUsersInGroup(final String groupName) {
-        return null;
+    	
+    	Collection<U> tmp = circles.get(groupName);
+    	
+    	if(tmp == null) {
+    		return new ArrayList<U>();
+    	}
+        return new ArrayList<U>(tmp);
     }
 
     @Override
     public List<U> getFollowedUsers() {
-        return null;
+        List<U> tmp = new ArrayList<U>();
+        
+        for (List<U> u : circles.values()) {
+			tmp.addAll(u);
+		}
+        return tmp;
     }
 
 }

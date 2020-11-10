@@ -34,8 +34,8 @@ public class Robot {
      * 
      * @return If the Up movement has been performed
      */
-    public boolean moveUp() {
-        return moveToPosition(environment.getCurrPosX(), this.environment.getCurrPosY() + Robot.MOVEMENT_DELTA);
+    public void moveUp() {
+        moveToPosition(environment.getCurrPosX(), this.environment.getCurrPosY() + Robot.MOVEMENT_DELTA);
     }
 
     /**
@@ -43,8 +43,8 @@ public class Robot {
      * 
      * @return If the Down movement has been performed
      */
-    public boolean moveDown() {
-        return this.moveToPosition(this.environment.getCurrPosX(), environment.getCurrPosY() - Robot.MOVEMENT_DELTA);
+    public void moveDown() {
+    	this.moveToPosition(this.environment.getCurrPosX(), environment.getCurrPosY() - Robot.MOVEMENT_DELTA);
     }
 
     /**
@@ -52,8 +52,8 @@ public class Robot {
      * 
      * @return A boolean indicating if the Left movement has been performed
      */
-    public boolean moveLeft() {
-        return this.moveToPosition(this.environment.getCurrPosX() - Robot.MOVEMENT_DELTA,
+    public void moveLeft() {
+        this.moveToPosition(this.environment.getCurrPosX() - Robot.MOVEMENT_DELTA,
                 this.environment.getCurrPosY());
     }
 
@@ -62,8 +62,8 @@ public class Robot {
      * 
      * @return A boolean indicating if the Right movement has been performed
      */
-    public boolean moveRight() {
-        return this.moveToPosition(this.environment.getCurrPosX() + Robot.MOVEMENT_DELTA,
+    public void moveRight() {
+        this.moveToPosition(this.environment.getCurrPosX() + Robot.MOVEMENT_DELTA,
                 this.environment.getCurrPosY());
     }
 
@@ -81,8 +81,9 @@ public class Robot {
      *            the new X position to move the robot to
      * @param newY
      *            the new Y position to move the robot to
-     * @return true if robot gets moved, false otherwise
+     * @throws PositionOutOfBoundException
      */
+    /*
     private boolean moveToPosition(final int newX, final int newY) {
         boolean returnValue = true;
         if (this.isBatteryEnoughToMove()) {
@@ -99,6 +100,19 @@ public class Robot {
             returnValue = false;
         }
         return returnValue;
+    }*/
+    private void moveToPosition(final int newX, final int newY) {
+        if (this.isBatteryEnoughToMove()) {
+        	try {
+        		this.environment.move(newX, newY);
+                this.consumeBatteryForMovement();
+                this.log("Moved to position(" + newX + "," + newY + ").");
+            } catch(PositionOutOfBoundException ex) {
+            	throw new PositionOutOfBoundException(newX, newY);
+            }
+        } else {
+            throw new NotEnoughBatteryException();
+        }
     }
 
     /**

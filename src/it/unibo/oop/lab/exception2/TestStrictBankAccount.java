@@ -1,5 +1,6 @@
 package it.unibo.oop.lab.exception2;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -23,5 +24,50 @@ public class TestStrictBankAccount {
          * presenza di un id utente errato, oppure al superamento del numero di
          * operazioni ATM gratuite.
          */
+    	
+    	BankAccount ba1 = new StrictBankAccount(1, 10000, 10);
+    	BankAccount ba2 = new StrictBankAccount(2, 10000, 10);
+    	
+    	AccountHolder ah1 = new AccountHolder("mr clean", "d'annunzio", 1);
+    	AccountHolder ah2 = new AccountHolder("mr clean", "d'annunzio 2", 2);
+    	
+    	try {
+    		ba1.deposit(ah2.getUserID(), 12);
+    		Assert.fail();
+    	}catch(WrongAccountHolderException | TransactionsOverQuotaException ex) {
+    		Assert.assertNotNull(ex);
+    	}
+    	
+    	try {
+    		ba1.deposit(ah1.getUserID(), 12);
+    	}catch(WrongAccountHolderException | TransactionsOverQuotaException ex) {
+    		Assert.fail();
+    		Assert.assertNotNull(ex);
+    	}
+    	
+    	ba1.withdraw(ah1.getUserID(), 10012);
+    	
+    	try {
+    		ba1.withdraw(ah1.getUserID(), 1);
+    		Assert.fail();
+    	}catch(WrongAccountHolderException | TransactionsOverQuotaException | NotEnoughFoundsException ex) {
+    		Assert.assertNotNull(ex);
+    	}
+    	
+    	ba1.deposit(ah1.getUserID(), 10000);
+    	
+    	for(int i = ba1.getNTransactions();i <= 10;i++) {
+    		ba1.withdrawFromATM(ah1.getUserID(), 1);
+    	}
+    	
+    	try {
+    		ba1.withdrawFromATM(ah1.getUserID(), 12);
+    		Assert.fail();
+    	}catch(WrongAccountHolderException | TransactionsOverQuotaException | NotEnoughFoundsException ex) {
+    		Assert.assertNotNull(ex);
+    	}
+    	
+    	
+    	
     }
 }
